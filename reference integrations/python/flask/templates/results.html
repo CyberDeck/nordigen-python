@@ -1,0 +1,32 @@
+<html>
+	{% include "header.html" %}
+	<body>
+		<div class="container h-100">
+			<div class="row h-100 justify-content-center align-items-center">
+				<div class="list-group justify-content-center col-6">
+					<ul class="list-group">
+
+						{% for acc in all_accounts %}
+						
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							
+							{{acc}}
+
+							<a class="btn" href="/downloads/{{acc}}_balances.json" download="{{acc}}_balances.json">
+								<i class="fa fa-download"></i>
+								Balances
+							</a>
+							<a class="btn" href="/downloads/{{acc}}_transactions.json" download="{{acc}}_transactions.json">
+								<i class="fa fa-download"></i>
+								Transactions
+							</a>
+						</li>
+						
+						{% endfor %}
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

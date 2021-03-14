@@ -1,0 +1,27 @@
+<html>
+	{% include "header.html" %}
+	<body>
+		<div class="container h-100">
+			<div class="row h-100 justify-content-center align-items-center">
+				<div class="list-group justify-content-center col-2">
+					
+					{% for contry in contries %}
+
+					<a href="#" class="list-country list-group-item list-group-item-action" data-contry="{{contry}}">
+						<i class="flag flag-{{ contry|lower}}"></i> 
+						{{ contry }}
+					</a>
+					
+					{% endfor %}
+
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		$( ".list-country" ).click(function () {
+			let  contry = $(this).data('contry');
+			window.location.href='select-aspsp/'+contry;
+		});
+	</script>
+</html>
