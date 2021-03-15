@@ -1,8 +1,15 @@
 # Python requests example
 ### Install & run
 
+
 ```bash
 pip3 install -r requirements.txt;
+```
+
+You'll need to get your token from the [Nordigen's Open Banking Portal](https://ob.nordigen.com/login/)
+And add it to main.py:10 as ```NG_TOKEN```
+
+```bash
 python3 main.py 
 1. Visit: https://ob.nordigen.com/psd2/start/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/REVOLUT_REVOGB21
 2. Authorise

@@ -7,7 +7,6 @@ python3 app.py
 ```
 
 \
-\
 You'll need to get your token from the [Nordigen's Open Banking Portal](https://ob.nordigen.com/login/)
 
 
