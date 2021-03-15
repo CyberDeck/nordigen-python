@@ -9,67 +9,40 @@ BASE_URL = 'https://ob.nordigen.com/api/'
 # Access token from https://ob.nordigen.com/tokens/
 NG_TOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
-# Base header
-BASE_HEADER = {
-    'accept': 'application/json',
-    'Authorization': f'Token {str(NG_TOKEN)}',
-    'Content-Type': 'application/json'
-}
 
-
-def get(url: str, payload: dict, **kwargs) -> json:
+def execute_request(method: str, url: str, data: dict) -> json:
     """
-    Request GET method.
+    Handle actual request to NG API.
 
     Args:
-        url     (str):  api url
-        payload (dict): GET params
+        method (str): Request method: GET | POST
+        url (str): Request URL
+        data (dict): GET payload or POST data
+
+    Raises:
+        HTTPError: On status code other than 200
 
     Returns:
-        json: responce for requestsd url
+        json: Responce json
     """
+    base_headers = {
+        'accept': 'application/json',
+        'Authorization': f'Token {NG_TOKEN}',
+        'Content-Type': 'application/json'
+    }
+
+    if method == 'GET':
+        response = requests.get(url, verify=True, headers=base_headers, params=data)
+    elif method == 'POST':
+        response = requests.post(url, verify=True, headers=base_headers, data=json.dumps(data))
+
     try:
-        response = requests.get(url, verify=True, headers=kwargs, params=payload)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        print(err)
+        raise
 
-    except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP ERROR: {http_err}')
-
-    except Exception as err:
-        print(f'ERROR: {err}')
-
-    if not response.raise_for_status():
-        try:
-            res_json = response.json()
-
-        except ValueError:
-            # no JSON returned
-            res_json = {}
-
-        return res_json
-
-
-def post(url: str, payload: dict, **kwargs) -> json:
-    """
-    Request POST method.
-
-    Args:
-        url     (str):  api url
-        payload (dict): POST data
-
-    Returns:
-        json: responce for requestsd url
-    """
-    try:
-        response = requests.post(url, verify=True, headers=kwargs, data=json.dumps(payload))
-
-    except requests.exceptions.HTTPError as http_err:
-        print(f'HTTP ERROR: {http_err}')
-
-    except Exception as err:
-        print(f'ERROR: {err}')
-
-    if not response.raise_for_status():
-        return response.json()
+    return response.json()
 
 
 def main():
@@ -83,7 +56,7 @@ def main():
     payload = {'country': 'FI'}
 
     # Get all aspsps - this can be skipped
-    aspsps = get(f'{BASE_URL}aspsps/', payload, **BASE_HEADER)
+    aspsps = execute_request('GET', f'{BASE_URL}aspsps/', payload)
 
     # Get aspsp ID
     aspsp_id = aspsps[0]['id']
@@ -110,7 +83,7 @@ def main():
 
     # Agreement ids
     agreements = []
-    response_data = post(f'{BASE_URL}agreements/enduser/', data, **BASE_HEADER)
+    response_data = execute_request('POST', f'{BASE_URL}agreements/enduser/', data)
     agreements.append(response_data['id'])
 
     # s3 Build a Link
@@ -132,7 +105,7 @@ def main():
         'enduser_id': enduser_id,
         'agreements': agreements
     }
-    response_data = post(f'{BASE_URL}requisitions/', data, **BASE_HEADER)
+    response_data = execute_request('POST', f'{BASE_URL}requisitions/', data)
     requisitions_id = response_data['id']
 
     # 3.1 Redirect link for the end user to ASPSP
@@ -141,7 +114,7 @@ def main():
     data = {
         'aspsp_id': aspsp_id
     }
-    response_data = post(f'{BASE_URL}requisitions/{requisitions_id}/links/', data, **BASE_HEADER)
+    response_data = execute_request('POST', f'{BASE_URL}requisitions/{requisitions_id}/links/', data)
 
     print(f"1. Visit: {response_data['initiate']}")
     print("2. Authorise")
@@ -154,7 +127,7 @@ def main():
 
     # 4 List all accounts
     #
-    response_data = get(f'{BASE_URL}requisitions/{requisitions_id}/', '', **BASE_HEADER)
+    response_data = execute_request('GET', f'{BASE_URL}requisitions/{requisitions_id}/', {})
     all_accounts = response_data['accounts']
 
     # 5 Get balances & transactions
@@ -164,7 +137,7 @@ def main():
         # Get balances/transactions for all accs
         for acc in all_accounts:
             print(f"Get {url_path} for account: {acc}")
-            response_data = get(f'{BASE_URL}accounts/{acc}/{url_path}/', '', **BASE_HEADER)
+            response_data = execute_request('GET', f'{BASE_URL}accounts/{acc}/{url_path}/', {})
 
             # Save as JSON
             with open(f'{acc}_{url_path}.json', 'w') as save_file:
