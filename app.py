@@ -39,7 +39,7 @@ def countries():
     """Create list of countries to chose from."""
     if api.ng_token:
         return render_template(
-                'select_country.html', contries=['AT', 'BE', 'EE', 'FI', 'IE', 'LV', 'LT']
+                'select_country.html', contries=['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IS', 'IT', 'LI', 'LT', 'LU', 'LV', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK']
             )
 
     return redirect(url_for('index'))
@@ -89,7 +89,7 @@ def results():
     if ref_id == api.reference_id:
         # Get account list
         all_accounts = api.accounts()
-        # Get transactions & balances
+        # Get details, transactions & balances
         rersults = api.acc_data(all_accounts)
         return render_template('results.html', rersults=rersults, all_accounts=all_accounts)
 
@@ -98,9 +98,9 @@ def results():
 
 @app.route('/downloads/<filename>', methods=['GET', 'POST'])
 def download(filename):
-    """Download balances and transactions."""
+    """Download details, balances and transactions."""
     downloads = os.path.join(app.root_path, 'downloads')
-    return send_from_directory(directory=downloads, filename=filename)
+    return send_from_directory(downloads, filename)
 
 
 if __name__ == '__main__':

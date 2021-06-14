@@ -126,7 +126,7 @@ class Endpoints():
 
     def acc_data(self, accounts: list) -> dict:
         """
-        Get account data - balances & transactions. Save data into json.
+        Get account data - details, balances & transactions. Save data into json.
 
         Args:
             accounts (list): Account IDs
@@ -136,17 +136,17 @@ class Endpoints():
         """
         ret_dict = {}
 
-        # Get balances/transactions for all accounts
+        # Get details/balances/transactions for all accounts
         for acc in accounts:
             ret_dict[acc] = {}
 
-            for url_path in ['balances', 'transactions']:
+            for url_path in ['details', 'balances', 'transactions']:
                 response_data = self._get_response(
                     'GET', f'{settings.BASE_URL}accounts/{acc}/{url_path}/', {}
                 )
 
                 # Save results
-                with open(f'downloads/{acc}_{url_path}.json', 'w+') as save_file:
+                with open(f'downloads/{acc}_{url_path}.json', 'w') as save_file:
                     json.dump(response_data, save_file)
 
                 ret_dict[acc][url_path] = response_data
