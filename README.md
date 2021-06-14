@@ -1,4 +1,12 @@
 # Flask example
+
+This official python library for [Nordigen](https://nordigen.com/).
+
+The module supports all Plaid API endpoints. For complete information about the API, head to the docs.
+
+For a full list of endpoints and arguments, see the [docs](https://nordigen.com/en/account_information_documenation/api-documention/overview/
+).
+
 ### Install & run
 
 ```bash
