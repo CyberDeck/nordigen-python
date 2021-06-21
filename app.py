@@ -2,6 +2,7 @@
 from datetime import datetime as dt
 import os
 import re
+import random
 from flask import Flask, render_template, request, send_from_directory, redirect, url_for
 from models import Endpoints
 
@@ -9,54 +10,34 @@ DEVELOPMENT_ENV = True
 app = Flask(__name__)
 api = Endpoints()
 
+# Set token
+api.ng_token = ""
 
-@app.route('/')
-def index():
-    """Index page - Token form."""
-    return render_template('get_token.html')
+# Select country
+api.country = ""
 
+# Create reference and user ids
+api.reference_id = dt.now().strftime("%Y%m%d%H%M%S")
+api.enduser_id = random.randint(10000, 99999)
 
-@app.route('/', methods=['POST'])
-def my_form_post():
-    """Get Nordigen access tokken. Copy from the Nordigen's Open Banking Portal."""
-    input_string = request.form['text']
-    ng_token = re.sub('[^A-Za-z0-9]+', '', input_string)
-
-    if ng_token:
-        # Set token
-        api.ng_token = ng_token
-
-        # Create reference and user ids
-        api.reference_id = dt.now().strftime("%Y%m%d%H%M%S")
-        api.enduser_id = 666
-        return redirect(url_for('countries'))
-
-    return redirect(url_for('index'))
-
-
-@app.route('/select-contry', methods=['GET'])
-def countries():
-    """Create list of countries to chose from."""
-    if api.ng_token:
-        return render_template(
-                'select_country.html', contries=['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IS', 'IT', 'LI', 'LT', 'LU', 'LV', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK']
-            )
-
-    return redirect(url_for('index'))
-
-
-@app.route('/select-aspsp/<country>', methods=['GET'])
-def aspsps(country):
+@app.route('/', methods=['GET'])
+def aspsps():
     """
     Query aspsp endpoint to get a list of all avialable ASPSPs (banks) in a given country.
-
-    Args:
-        country (str): Two-character country code
     """
-    if country:
-        banks = api.aspsps(country)
-        return render_template('select_aspsp.html', aspsps=banks)
 
+    if api.ng_token is None or api.ng_token == "":
+        return render_template('select_missing_inputs.html', message="Missing token. Get a token from OB portal (ob.nordigen.com) and provide in app.py file.")
+    if api.country is None or api.country == "":
+        return render_template('select_missing_inputs.html', message="Missing country parameter. Provide two-letter country code (ISO 3166) in app.py file.")
+    if api.reference_id is None or api.reference_id == "":
+        return render_template('select_missing_inputs.html', message="Missing reference ID. Provide unique reference ID in app.py file.")
+    if api.enduser_id is None or api.enduser_id == "":
+        return render_template('select_missing_inputs.html', message="Missing end user ID. Provide end-user ID in app.py file.")
+
+    banks = api.aspsps(api.country)
+    return render_template('select_aspsp.html', aspsps=banks)
+        
     return redirect(url_for('index'))
 
 

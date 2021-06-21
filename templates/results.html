@@ -2,7 +2,10 @@
 	{% include "header.html" %}
 	<body>
 		<div class="container h-100">
-			<div class="row h-100 justify-content-center align-items-center">
+			<div class="row justify-content-center align-items-center p-3">
+				Choose details, balances or transactions information to download
+			</div>
+			<div class="row justify-content-center align-items-center p-3">
 				<div class="list-group justify-content-center col-6">
 					<ul class="list-group">
 
@@ -10,7 +13,6 @@
 						
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							
-							{{acc}}
 							<a class="btn" href="/downloads/{{acc}}_details.json" download="{{acc}}_details.json">
 								<i class="fa fa-download"></i>
 								Details
