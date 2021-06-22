@@ -108,8 +108,11 @@ class Endpoints():
         self.banks = banks
 
         for b in banks:
-            link = logo_links.loc[logo_links["aspsp_id"]==b["id"],"link"].values[0]
-            b["logo_link"] = link
+            try:
+                link = logo_links.loc[logo_links["aspsp_id"]==b["id"],"link"].values[0]
+                b["logo_link"] = link
+            except:
+                b["logo_link"] = "https://static.thenounproject.com/png/95203-200.png"
             ret_list.append(b)            
 
         return ret_list
