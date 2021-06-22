@@ -1,24 +1,63 @@
 <html>
 	{% include "header.html" %}
 	<body>
-		<div class="container">
-			<div class="row justify-content-center p-3">
-				Select a bank
-			</div>
-			<div class="row justify-content-center p-3">
-				
-				<div class="list-group justify-content-center col-2">
-					
-					{% for aspsp in aspsps %}
 
-					<a href="#" class="list-aspsp list-group-item list-group-item-action" data-aspsp="{{aspsp.id}}"> 
-						{{ aspsp.name }}
-					</a>
-					
-					{% endfor %}
+		<div class="container d-flex flex-column min-vh-100 justify-content-center">
 
+			<div class="row p-3">
+				<div class="col">
+				</div>
+				<div class="col-4 border border-dark rounded">
+					<div class="row p-4">
+						<div class="col-11">
+							<p class="h4">Select your bank</p>
+						</div>
+						<div class="col-1">
+							<a href='http://www.nordigen.com'>
+								<i class="fas fa-times text-muted" style="font-size:small"></i>
+							</a>
+						</div>
+
+					</div>
+					<div class="input-group rounded p-3">
+						
+						<input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" id="search_field"/>
+
+						<span class="input-group-text border-0" id="search-addon">
+							<a href='' onclick="this.href=document.getElementById('search_field').value">
+								<i class="fas fa-search text-muted"></i>
+							</a>
+							&nbsp;&nbsp;
+							<a href='/' class="text-muted" style="font-size:small">
+								clear
+							</a>
+						</span>
+
+					</div>
+					<div class="row p-3" style="height: 400px; overflow-y: scroll;">
+						<p class="h6">
+							{% for aspsp in aspsps %}
+
+							<a href="#" class="list-aspsp list-group-item list-group-item-action list-group-item-light border border-white overflow-auto" data-aspsp="{{aspsp.id}}"> 
+								<img src="{{ aspsp.logo_link }}" class="border border-dark rounded" style="width:15%">
+								&nbsp;&nbsp;&nbsp;
+								{{ aspsp.name }}
+							</a>
+
+							{% endfor %}
+						</p>
+					</div>
+					<div class="row p-3">
+						<p style="font-size:x-small" class="text-muted">
+						<img src="https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fedeb2cf3-7708-4c1b-9bc8-342656079697%2FLogo1.png?table=block&id=7c01b6f7-e852-4e50-8103-685f5eb9da6b&spaceId=e133aa11-3a79-4d5e-b9d6-15de830c83ba&width=800&userId=&cache=v2" style="width:25%">
+						Account Information Service.
+						</p>
+					</div>
+				</div>
+				<div class="col">
 				</div>
 			</div>
+
 		</div>
 	</body>
 
@@ -28,4 +67,5 @@
 			window.location.href='/agreements/'+aspsp_id;
 		});
 	</script>
+
 </html>

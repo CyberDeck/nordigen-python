@@ -2,7 +2,7 @@
 import json
 import requests
 import settings
-
+import pandas as pd
 
 class Endpoints():
     """Nordigen API aendpoints."""
@@ -66,6 +66,54 @@ class Endpoints():
         aspsps = self._get_response('GET', f'{settings.BASE_URL}aspsps/', payload)
         return aspsps
 
+    def filter_aspsps(self, banks: list, filter_item: str) -> list:
+        """
+        Filter ASPSPs (banks) in a given country.
+
+        Args:
+            banks (list): List of all banks in a given country
+            filter_item (str): search term for fitlering
+
+        Returns:
+            banks (list): List of filtered banks in a given country
+        """
+
+        ret_list = []
+
+        self.banks = banks
+        self.filter_item = filter_item
+        filter_item = filter_item.lower()
+
+        for b in banks:
+            if filter_item in b["name"].lower():
+                ret_list.append(b)
+        
+        return ret_list
+
+    def add_logo_link(self, banks: list) -> list:
+        """
+        Get links for ASPSPs (banks) logos in a given country.
+
+        Args:
+            banks (list): List of all banks in a given country
+
+        Returns:
+            dict: All banks and links to logos
+        """
+
+        ret_list = []
+
+        logo_links = pd.read_csv('docs/resources/_data/logo_links.csv')
+
+        self.banks = banks
+
+        for b in banks:
+            link = logo_links.loc[logo_links["aspsp_id"]==b["id"],"link"].values[0]
+            b["logo_link"] = link
+            ret_list.append(b)            
+
+        return ret_list
+
     def enduser_agreement(self, aspsp_id: str, max_historical_days: int = 90):
         """
         Create end user agreement.
@@ -93,6 +141,7 @@ class Endpoints():
             'enduser_id': self.enduser_id,
             'agreements': self.agreements
         }
+
         response_data = self._get_response('POST', f'{settings.BASE_URL}requisitions/', data)
         self.requisitions_id = response_data['id']
 

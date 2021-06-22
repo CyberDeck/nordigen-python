@@ -36,10 +36,22 @@ def aspsps():
         return render_template('select_missing_inputs.html', message="Missing end user ID. Provide end-user ID in app.py file.")
 
     banks = api.aspsps(api.country)
+    banks = api.add_logo_link(banks)
+
+    return render_template('select_aspsp.html', aspsps=banks)
+
+@app.route('/<search>', methods=['GET'])
+def aspsps_filtered(search):
+    """
+    Query aspsp endpoint to get a list of filtered ASPSPs (banks) in a given country.
+    """
+
+    banks = api.aspsps(api.country)
+    banks = api.filter_aspsps(banks, search)
+    banks = api.add_logo_link(banks)
+    
     return render_template('select_aspsp.html', aspsps=banks)
         
-    return redirect(url_for('index'))
-
 
 @app.route('/agreements/<aspsp_id>', methods=['GET'])
 def agreements(aspsp_id):
