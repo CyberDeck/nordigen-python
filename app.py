@@ -18,8 +18,7 @@ import settings
 DEVELOPMENT_ENV = True
 app = Flask(__name__)
 api = Endpoints()
-
-cfg = yaml.load(open(settings.CURRENT_DIR + '/settings.yaml'))
+cfg = yaml.safe_load(open(settings.CURRENT_DIR + '/settings.yaml'))
 
 api.ng_token = cfg.get("TOKEN", "")
 api.country = cfg.get("COUNTRY", "")
