@@ -1,5 +1,6 @@
-"""Nordigen API aendpoints."""
+"""Nordigen API endpoints."""
 import json
+import uuid
 from typing import Any
 
 import requests
@@ -7,7 +8,7 @@ import settings
 
 
 class Endpoints(object):
-    """Nordigen API aendpoints."""
+    """Nordigen API endpoints."""
 
     def __init__(self):
         """Variables used trough all api calls."""
@@ -64,25 +65,26 @@ class Endpoints(object):
 
     def aspsps(self, country: str):
         """
-        Get all avialable ASPSPs (banks) in a given country.
+        Get all available ASPSPs (banks) in a given country.
 
         Args:
             country (str): Two-character country code
 
         Returns:
-            list: Aspsps in given country
+            list: ASPSPs in given country
         """
         self.country = country
         payload = {'country': self.country}
         return self._get_response('GET', f'{settings.BASE_URL}/api/aspsps/', payload)
 
-    def filter_aspsps(self, banks: list, filter_item: str) -> list:
+    @staticmethod
+    def filter_aspsps(banks: list, filter_item: str) -> list:
         """
         Filter ASPSPs (banks) in a given country.
 
         Args:
             banks (list): List of all banks in a given country
-            filter_item (str): search term for fitlering
+            filter_item (str): search term for filtering
 
         Returns:
             banks (list): List of filtered banks in a given country
@@ -90,7 +92,8 @@ class Endpoints(object):
         filter_item = filter_item.lower()
         return [a for a in banks if filter_item in a["name"].lower()]
 
-    def add_logo_link(self, banks: list) -> list:
+    @staticmethod
+    def add_logo_link(banks: list) -> list:
         """
         Get links for ASPSPs (banks) logos in a given country.
 
@@ -133,6 +136,7 @@ class Endpoints(object):
 
     def requisitions(self):
         """Create requisition for creating links and retrieving accounts."""
+        self.reference_id = str(uuid.uuid4())
         data = {
             'redirect': settings.REDIRECT_URL,
             'reference': self.reference_id,

@@ -1,6 +1,4 @@
 """Flask app."""
-from datetime import datetime as dt
-import random
 from flask import (
     Flask,
     render_template,
@@ -13,6 +11,7 @@ from models import Endpoints
 import yaml
 import os
 import settings
+import uuid
 
 
 DEVELOPMENT_ENV = True
@@ -23,9 +22,10 @@ cfg = yaml.safe_load(open(settings.CURRENT_DIR + '/settings.yaml'))
 api.ng_token = cfg.get("TOKEN", "")
 api.country = cfg.get("COUNTRY", "")
 
-# Create reference and user ids
-api.reference_id = dt.now().strftime("%Y%m%d%H%M%S")
-api.enduser_id = random.randint(10000, 99999)
+# User ID is fixed for the session
+# Reference ID is calculated for each new requisition.
+api.reference_id = None
+api.enduser_id = str(uuid.uuid4())
 
 
 @app.route('/', methods=['GET'])
@@ -38,18 +38,14 @@ def aspsps():
                       "and provide in settings.yaml file."
     m_missing_country = "Missing country parameter. Provide two-letter country code " \
                         "(ISO 3166) in settings.yaml file."
-    m_missing_refid = "Missing reference ID. Provide unique reference ID in " \
-                      "app.py file."
-    m_mising_euid = "Missing end user ID. Provide end-user ID in app.py file."
+    m_missing_euid = "Missing end user ID. Provide end-user ID in app.py file."
 
     if not api.ng_token:
         return render_template('select_missing_inputs.html', message=m_missing_token)
     if not api.country:
         return render_template('select_missing_inputs.html', message=m_missing_country)
-    if not api.reference_id:
-        return render_template('select_missing_inputs.html', message=m_missing_refid)
     if not api.enduser_id:
-        return render_template('select_missing_inputs.html', message=m_mising_euid)
+        return render_template('select_missing_inputs.html', message=m_missing_euid)
 
     banks = api.aspsps(api.country)
     banks = api.add_logo_link(banks)
